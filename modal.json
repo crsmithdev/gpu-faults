@@ -1,0 +1,12 @@
+{
+  "app": "faults-jobs",
+  "image": "image.py:image",
+  "volumes": {"/data": "faults-data"},
+  "recipes": {
+    "data": {"kind": "job", "timeout": 1800, "cmd": ["python", "data.py"], "env": {"DATA": "/data", "SHARDS": "4"}},
+    "train": {"kind": "job", "gpu": "L4:4", "timeout": 3600, "cache": true,
+              "cmd": ["torchrun", "--standalone", "--nproc-per-node=gpu", "train.py"],
+              "env": {"MODE": "ddp", "MODEL": "124M", "DATA": "/data"},
+              "phases": {"train": "^step 1/"}}
+  }
+}
