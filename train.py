@@ -173,6 +173,11 @@ def main() -> None:
     attempt = int(os.environ.get("TORCHELASTIC_RESTART_COUNT", 0))
     if os.environ["RANK"] == "0":
         print(f"proc start attempt {attempt} container {os.environ.get('MLIB_ATTEMPT', 0)}", flush=True)
+        # Whether the GPUs can reach each other directly sets the speed of NCCL.
+        # nvidia-smi topo -m does not work in Modal's sandbox.
+        n = torch.cuda.device_count()
+        p2p = [[int(i == j or torch.cuda.can_device_access_peer(i, j)) for j in range(n)] for i in range(n)]
+        print(f"p2p {p2p} cpu {open('/proc/cpuinfo').read().split('model name')[1].split(chr(10))[0].strip(': ')}", flush=True)
     # async_save stages the state on the CPU and needs a CPU process group. Only
     # NCCL alone comes back after a torchrun restart: in torch 2.11 the gloo
     # group of the new workers fails with "Connection refused".
