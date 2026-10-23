@@ -8,10 +8,10 @@ on the Volume `faults-jobs-runs`; `uv run mlib logs <id>` shows a log.
 
 | GPU | Call to container start |
 | - | - |
-| 4×L4 | 1752, 2662 and 4065 s; one call still pending after 70 min |
+| 4×L4 | 1752, 2662, 4065 and 5850 s |
 | 4×L40S | 6 to 716 s |
 
-4×L4 queues for 30 to 70 minutes, so the runs use 4×L40S.
+4×L4 queues for 30 to 100 minutes, so the runs use 4×L40S.
 
 ## DDP and FSDP2, 200 steps
 
@@ -24,7 +24,8 @@ on the Volume `faults-jobs-runs`; `uv run mlib logs <id>` shows a log.
 
 Runs: fc-01M5K67PQ7P9MRP8DZS7W2M04A (DDP), fc-01M5K67PHTEFSP65B8YPN2QR8M
 (FSDP2), fc-01M5K48MFK4PVYM7C4KKPCZ251 (1 GPU), fc-01M5K48K5MMPW5D3X7Z4JWNQ63
-(1.5B). MFU is against the dense bf16 peak: 362 TFLOP/s for the L40S and
+(1.5B). DDP with 1.5B on 4×L4 ran out of memory before step 1: 21.44 GiB
+allocated of 22.06 GiB (fc-01M5K48K295SYDT97YPHZJVSJV). MFU is against the dense bf16 peak: 362 TFLOP/s for the L40S and
 121 for the L4.
 
 ## Faults
@@ -55,7 +56,43 @@ watchdog), fc-01M5K7YT7CZMA7F6PX6YGTCG1S (lost container).
 - A checkpoint on the runs Volume survives a lost container only after the
   next modal-lib heartbeat commits the Volume, up to 30 s after the save.
 
-## Checkpoint save, 124M on 4×L40S, FSDP2
+## Two kinds of L40S host
 
-A synchronous save blocks for 0.5 to 0.8 s to local disk (`/tmp`) and 1.0
-to 1.4 s to the runs Volume. The first save of a run takes longer.
+The same FSDP2 124M run takes 1011 to 1060 ms per step on most 4×L40S
+containers, and 657 to 671 ms on some. 3 of about 30 FSDP2 runs got the fast
+kind, all in one batch launched at 02:55 UTC (fc-01M5KAQ6V431NMJT6G8RMVQFVS,
+fc-01M5KAQ5H4ES4PKJW9W4JAPN6M, fc-01M5KAQ82KHA6QAJERT26M2D4M). The
+difference is in the communication: memory and loss are the same.
+
+On 12 slow containers, no GPU pair has peer access
+(`torch.cuda.can_device_access_peer`), and NCCL uses `SHM/direct` for every
+channel. `nvidia-smi topo -m` fails in the sandbox, and the CPU model is
+hidden. The fast containers ran before the diagnostic existed, so the cause
+is not confirmed. The guess is P2P over a PCIe switch on the fast hosts.
+
+All the DDP and FSDP2 numbers above are from slow hosts.
+
+## Checkpoint save, FSDP2 on 4×L40S
+
+| Model | Size | Save | Blocks training | Save done |
+| - | - | - | - | - |
+| 124M | about 1.5 GB | sync, local disk | 0.50 to 0.80 s | same |
+| 124M | | sync, runs Volume | 1.00 to 1.42 s | same |
+| 124M | | async, local disk | 0.11 to 0.31 s | 6.4 to 7.5 s later |
+| 124M | | async, runs Volume | 0.14 to 0.34 s | 7.4 to 7.9 s later |
+| 1.5B | about 18.7 GB | sync, local disk | 5.2 to 6.2 s | same |
+| 1.5B | | async, local disk | 1.1 to 2.0 s | 5.7 s later; the first save 185 s |
+
+The size is 12 bytes per parameter: fp32 weights and the two AdamW moments.
+The first save of a run takes longer. The 1.5B sync run was most likely on a
+fast host (5.4 s per step) and the async run on a slow one (18.2 s per step),
+so the pair does not show what async saving costs in step time.
+
+Runs: fc-01M5KAQAT59CNA6Y9YBNQRK0KM, fc-01M5KAQ6V431NMJT6G8RMVQFVS,
+fc-01M5KAQ5H4ES4PKJW9W4JAPN6M, fc-01M5KAQ82KHA6QAJERT26M2D4M (124M),
+fc-01M5KAQ7BAJYPW6JD704DQWPXS, fc-01M5KAQ3WKDQZM56DQTXQEXZ71 (1.5B).
+
+## Spend
+
+$16.57 over 42 runs on `faults-jobs`, to 2026-10-22 03:40 UTC, plus under
+$0.10 of CPU probes.
