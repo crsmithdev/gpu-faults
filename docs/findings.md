@@ -60,7 +60,7 @@ watchdog), fc-01M5K7YT7CZMA7F6PX6YGTCG1S (lost container).
 
 The same FSDP2 124M run takes 1011 to 1060 ms per step on most 4×L40S
 containers, and 657 to 671 ms on some. 3 of about 30 FSDP2 runs got the fast
-kind, all in one batch launched at 02:55 UTC (fc-01M5KAQ6V431NMJT6G8RMVQFVS,
+kind, all in one batch launched at 2026-10-23 02:55 UTC (fc-01M5KAQ6V431NMJT6G8RMVQFVS,
 fc-01M5KAQ5H4ES4PKJW9W4JAPN6M, fc-01M5KAQ82KHA6QAJERT26M2D4M). The
 difference is in the communication: memory and loss are the same.
 
@@ -94,5 +94,5 @@ fc-01M5KAQ7BAJYPW6JD704DQWPXS, fc-01M5KAQ3WKDQZM56DQTXQEXZ71 (1.5B).
 
 ## Spend
 
-$16.57 over 42 runs on `faults-jobs`, to 2026-10-22 03:40 UTC, plus under
+$16.57 over 42 runs on `faults-jobs`, to 2026-10-23 03:34 UTC, plus under
 $0.10 of CPU probes.
