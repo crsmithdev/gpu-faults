@@ -130,5 +130,5 @@ day, Young's interval is 5.6 minutes for 124M and 16.5 minutes for 1.5B
 
 ## Spend
 
-$20.73 over 51 runs on `faults-jobs`, to 2026-10-23 04:10 UTC, plus under
+$20.73 over 51 runs on `faults-jobs`, to 2026-10-23 04:08 UTC, plus under
 $0.10 of CPU probes.
