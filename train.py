@@ -15,6 +15,9 @@ Run it with torchrun. The settings are environment variables:
     CKPT      the folder for checkpoints; a run resumes from the latest one in it
     CKPT_EVERY  steps between checkpoints, 0 for none
     ASYNC     1 to save with dcp.async_save
+    FAULT     crash (SIGKILL) or hang (SIGSTOP) one rank, on the first attempt only
+    FAULT_STEP, FAULT_RANK  where the fault happens
+    NCCL_TIMEOUT  seconds before the NCCL watchdog stops a stuck collective (600 is the default)
 
 Every world size reads the same tokens at each step, in the same micro-batches,
 so the loss of a run on 4 GPUs can be compared with the loss on 1 GPU.
@@ -24,7 +27,9 @@ The last line is `result {...}` with the medians of the timed steps.
 import glob
 import json
 import math
+import datetime
 import os
+import signal
 import statistics
 import time
 
@@ -147,9 +152,15 @@ def main() -> None:
     steps, batch, micro = env("STEPS", 50), env("BATCH", 262144), env("MICRO", 8)
     profile = env("PROFILE", 0)
     ckpt, every = env("CKPT", ""), env("CKPT_EVERY", 0)
+    attempt = int(os.environ.get("TORCHELASTIC_RESTART_COUNT", 0))
+    if os.environ["RANK"] == "0":
+        print(f"proc start attempt {attempt}", flush=True)
     # async_save stages the state on the CPU and needs a CPU process group.
-    dist.init_process_group("cuda:nccl,cpu:gloo")
+    dist.init_process_group("cuda:nccl,cpu:gloo", timeout=datetime.timedelta(seconds=env("NCCL_TIMEOUT", 600)))
     rank, world = dist.get_rank(), dist.get_world_size()
+    dist.barrier()  # the first collective creates the NCCL communicator
+    if rank == 0:
+        print("nccl ready", flush=True)
     torch.cuda.set_device(int(os.environ["LOCAL_RANK"]))
     count = batch // (micro * SEQ)
     assert count * micro * SEQ == batch and count % world == 0, "BATCH must split into MICRO x SEQ x world"
@@ -191,12 +202,17 @@ def main() -> None:
     per_shard = (len(shards[0]) - 1) // batch
     gpu = torch.cuda.get_device_name()
     peak = next((v for k, v in PEAK.items() if k in gpu), None)
+    fault = env("FAULT", "") if attempt == 0 else ""
+    fault_step, fault_rank = env("FAULT_STEP", 0), env("FAULT_RANK", world - 1)
     log(f"{mode} {size} on {world} x {gpu}: {n_params / 1e6:.0f}M parameters, "
         f"{count // world} micro-batches of {micro} per GPU per step")
 
     times, losses = [], []
     prof = None
     for step in range(start, steps):
+        if fault and step == fault_step and rank == fault_rank:
+            print(f"fault {fault} rank {rank} step {step}", flush=True)
+            os.kill(os.getpid(), signal.SIGKILL if fault == "crash" else signal.SIGSTOP)
         if profile and step == steps - profile:
             prof = torch.profiler.profile(activities=[torch.profiler.ProfilerActivity.CUDA])
             prof.start()
