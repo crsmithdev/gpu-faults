@@ -17,8 +17,10 @@ Run it with torchrun. The settings are environment variables:
     CKPT_EVERY  steps between checkpoints, 0 for none
     ASYNC     1 to save with dcp.async_save
     FAULT     crash (SIGKILL) or hang (SIGSTOP) one rank, or stop the container (SIGKILL
-              to PID 1), on the first attempt only
-    FAULT_STEP, FAULT_RANK  where the fault happens
+              to PID 1)
+    FAULT_STEP  steps where the faults happen, such as 37,81,128; the k-th fault
+              happens on torchrun attempt k, in the first container only
+    FAULT_RANK  the rank that fails, the last one by default
     NCCL_TIMEOUT  seconds before the NCCL watchdog stops a stuck collective (600 is the default)
     STEP_TIMEOUT  seconds without a finished step before the process exits, 0 for none
 
@@ -229,9 +231,10 @@ def main() -> None:
     gpu = torch.cuda.get_device_name()
     peak = next((v for k, v in PEAK.items() if k in gpu), None)
     # A Modal retry starts torchrun again, so its restart count is 0 again.
-    first = attempt == 0 and os.environ.get("MLIB_ATTEMPT", "0") == "0"
+    fault_steps = [int(s) for s in env("FAULT_STEP", "0").split(",")]
+    first = attempt < len(fault_steps) and os.environ.get("MLIB_ATTEMPT", "0") == "0"
     fault = env("FAULT", "") if first else ""
-    fault_step, fault_rank = env("FAULT_STEP", 0), env("FAULT_RANK", world - 1)
+    fault_step, fault_rank = fault_steps[min(attempt, len(fault_steps) - 1)], env("FAULT_RANK", world - 1)
     log(f"{mode} {size} on {world} x {gpu}: {n_params / 1e6:.0f}M parameters, "
         f"{count // world} micro-batches of {micro} per GPU per step")
 

@@ -1,0 +1,228 @@
+1792727923.129 proc start attempt 0 container 0
+1792727923.620 p2p [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]] cpu 	: unknown
+1792727923.622 /usr/local/lib/python3.12/site-packages/torch/distributed/c10d_logger.py:83: UserWarning: barrier(): using the device under current context. You can specify `device_id` in `init_process_group` to mute this warning.
+1792727923.623   return func(*args, **kwargs)
+1792727923.968 [rank0]:[W1023 03:58:43.578065360 ProcessGroupNCCL.cpp:5188] Guessing device ID based on global rank. This can cause a hang if rank to GPU mapping is heterogeneous. You can specify device_id in init_process_group()
+1792727924.470 nccl ready
+1792727927.906 fsdp 124M on 4 x NVIDIA L40S: 124M parameters, 8 micro-batches of 8 per GPU per step
+1792727931.302 step 1/150 loss 11.0101 norm 16.208 3395 ms 77222 tok/s mfu 4.6% mem 7.59 GB
+1792727932.326 step 2/150 loss 10.2612 norm 7.923 1023 ms 256138 tok/s mfu 15.1% mem 7.83 GB
+1792727933.354 step 3/150 loss 9.8427 norm 4.085 1027 ms 255194 tok/s mfu 15.1% mem 7.83 GB
+1792727934.388 step 4/150 loss 9.6545 norm 2.609 1034 ms 253548 tok/s mfu 15.0% mem 7.83 GB
+1792727935.553 step 5/150 loss 9.5891 norm 2.841 1163 ms 225316 tok/s mfu 13.3% mem 7.83 GB
+1792727936.579 step 6/150 loss 9.4314 norm 2.340 1026 ms 255594 tok/s mfu 15.1% mem 7.83 GB
+1792727937.606 step 7/150 loss 9.3000 norm 2.020 1026 ms 255475 tok/s mfu 15.1% mem 7.83 GB
+1792727938.641 step 8/150 loss 9.1267 norm 1.857 1034 ms 253487 tok/s mfu 15.0% mem 7.83 GB
+1792727939.663 step 9/150 loss 8.9704 norm 1.752 1022 ms 256555 tok/s mfu 15.2% mem 7.83 GB
+1792727941.472 ckpt save step 10 blocked 776 ms
+1792727941.473 step 10/150 loss 8.8496 norm 1.581 1033 ms 253726 tok/s mfu 15.0% mem 7.83 GB
+1792727942.501 step 11/150 loss 8.6639 norm 1.410 1028 ms 254988 tok/s mfu 15.1% mem 7.83 GB
+1792727943.532 step 12/150 loss 8.4138 norm 1.626 1030 ms 254555 tok/s mfu 15.0% mem 7.83 GB
+1792727944.559 step 13/150 loss 8.2407 norm 1.252 1027 ms 255284 tok/s mfu 15.1% mem 7.83 GB
+1792727945.583 step 14/150 loss 8.0474 norm 1.083 1023 ms 256143 tok/s mfu 15.1% mem 7.83 GB
+1792727946.610 step 15/150 loss 7.9078 norm 1.702 1026 ms 255430 tok/s mfu 15.1% mem 7.83 GB
+1792727947.639 step 16/150 loss 7.8064 norm 1.120 1028 ms 255009 tok/s mfu 15.1% mem 7.83 GB
+1792727948.675 step 17/150 loss 7.7411 norm 0.991 1035 ms 253192 tok/s mfu 15.0% mem 7.83 GB
+1792727949.700 step 18/150 loss 7.7383 norm 1.284 1024 ms 255999 tok/s mfu 15.1% mem 7.83 GB
+1792727950.737 step 19/150 loss 7.5446 norm 0.943 1037 ms 252822 tok/s mfu 14.9% mem 7.83 GB
+1792727952.253 ckpt save step 20 blocked 496 ms
+1792727952.254 step 20/150 loss 7.5516 norm 0.745 1020 ms 256912 tok/s mfu 15.2% mem 7.83 GB
+1792727953.290 step 21/150 loss 7.5952 norm 1.561 1036 ms 253095 tok/s mfu 15.0% mem 7.83 GB
+1792727954.318 step 22/150 loss 7.6416 norm 0.960 1027 ms 255154 tok/s mfu 15.1% mem 7.83 GB
+1792727955.342 step 23/150 loss 7.5075 norm 0.886 1023 ms 256163 tok/s mfu 15.1% mem 7.83 GB
+1792727956.369 step 24/150 loss 7.4537 norm 1.139 1026 ms 255494 tok/s mfu 15.1% mem 7.83 GB
+1792727957.408 step 25/150 loss 7.4404 norm 1.491 1039 ms 252393 tok/s mfu 14.9% mem 7.83 GB
+1792727958.443 step 26/150 loss 7.3955 norm 0.924 1034 ms 253411 tok/s mfu 15.0% mem 7.83 GB
+1792727959.464 step 27/150 loss 7.3486 norm 0.865 1020 ms 256979 tok/s mfu 15.2% mem 7.83 GB
+1792727960.488 step 28/150 loss 7.3350 norm 0.893 1024 ms 255932 tok/s mfu 15.1% mem 7.83 GB
+1792727961.518 step 29/150 loss 7.3772 norm 1.037 1028 ms 254898 tok/s mfu 15.1% mem 7.83 GB
+1792727963.299 ckpt save step 30 blocked 761 ms
+1792727963.299 step 30/150 loss 7.3255 norm 0.726 1020 ms 257072 tok/s mfu 15.2% mem 7.83 GB
+1792727964.332 step 31/150 loss 7.2656 norm 0.645 1033 ms 253819 tok/s mfu 15.0% mem 7.83 GB
+1792727965.360 step 32/150 loss 7.2776 norm 0.532 1027 ms 255136 tok/s mfu 15.1% mem 7.83 GB
+1792727966.392 step 33/150 loss 7.2348 norm 0.593 1031 ms 254197 tok/s mfu 15.0% mem 7.83 GB
+1792727967.415 step 34/150 loss 7.1321 norm 0.482 1023 ms 256340 tok/s mfu 15.1% mem 7.83 GB
+1792727968.449 step 35/150 loss 7.1655 norm 0.843 1033 ms 253687 tok/s mfu 15.0% mem 7.83 GB
+1792727969.471 step 36/150 loss 7.2221 norm 0.957 1021 ms 256676 tok/s mfu 15.2% mem 7.83 GB
+1792727970.504 step 37/150 loss 7.1559 norm 0.825 1032 ms 254040 tok/s mfu 15.0% mem 7.83 GB
+1792727970.505 fault crash rank 3 step 37
+1792727970.783 W1023 03:59:30.781000 7 site-packages/torch/distributed/elastic/multiprocessing/api.py:1012] Sending process 17 closing signal SIGTERM
+1792727970.783 W1023 03:59:30.782000 7 site-packages/torch/distributed/elastic/multiprocessing/api.py:1012] Sending process 18 closing signal SIGTERM
+1792727970.784 W1023 03:59:30.782000 7 site-packages/torch/distributed/elastic/multiprocessing/api.py:1012] Sending process 19 closing signal SIGTERM
+1792727971.366 E1023 03:59:31.365000 7 site-packages/torch/distributed/elastic/multiprocessing/api.py:986] failed (exitcode: -9) local_rank: 3 (pid: 20) of binary: /usr/local/bin/python
+1792727974.553 proc start attempt 1 container 0
+1792727974.762 p2p [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]] cpu 	: unknown
+1792727974.765 /usr/local/lib/python3.12/site-packages/torch/distributed/c10d_logger.py:83: UserWarning: barrier(): using the device under current context. You can specify `device_id` in `init_process_group` to mute this warning.
+1792727974.765   return func(*args, **kwargs)
+1792727975.072 [rank0]:[W1023 03:59:35.682447102 ProcessGroupNCCL.cpp:5188] Guessing device ID based on global rank. This can cause a hang if rank to GPU mapping is heterogeneous. You can specify device_id in init_process_group()
+1792727975.553 nccl ready
+1792727979.729 ckpt load step 30 893 ms
+1792727979.731 fsdp 124M on 4 x NVIDIA L40S: 124M parameters, 8 micro-batches of 8 per GPU per step
+1792727982.886 step 31/150 loss 7.2656 norm 0.645 3155 ms 83082 tok/s mfu 4.9% mem 7.83 GB
+1792727983.916 step 32/150 loss 7.2776 norm 0.532 1028 ms 254934 tok/s mfu 15.1% mem 7.83 GB
+1792727984.958 step 33/150 loss 7.2348 norm 0.593 1042 ms 251681 tok/s mfu 14.9% mem 7.83 GB
+1792727986.004 step 34/150 loss 7.1321 norm 0.482 1046 ms 250725 tok/s mfu 14.8% mem 7.83 GB
+1792727987.041 step 35/150 loss 7.1655 norm 0.843 1036 ms 253078 tok/s mfu 15.0% mem 7.83 GB
+1792727988.074 step 36/150 loss 7.2221 norm 0.957 1033 ms 253854 tok/s mfu 15.0% mem 7.83 GB
+1792727989.101 step 37/150 loss 7.1559 norm 0.825 1026 ms 255431 tok/s mfu 15.1% mem 7.83 GB
+1792727990.143 step 38/150 loss 7.1300 norm 0.503 1041 ms 251911 tok/s mfu 14.9% mem 7.83 GB
+1792727991.179 step 39/150 loss 7.0577 norm 0.564 1035 ms 253243 tok/s mfu 15.0% mem 7.83 GB
+1792727992.988 ckpt save step 40 blocked 757 ms
+1792727992.989 step 40/150 loss 7.2173 norm 0.577 1051 ms 249326 tok/s mfu 14.7% mem 7.83 GB
+1792727994.026 step 41/150 loss 7.1533 norm 0.617 1037 ms 252788 tok/s mfu 14.9% mem 7.83 GB
+1792727995.060 step 42/150 loss 7.1700 norm 0.533 1034 ms 253591 tok/s mfu 15.0% mem 7.83 GB
+1792727996.084 step 43/150 loss 7.0384 norm 0.445 1023 ms 256144 tok/s mfu 15.1% mem 7.83 GB
+1792727997.123 step 44/150 loss 7.0707 norm 0.662 1038 ms 252469 tok/s mfu 14.9% mem 7.83 GB
+1792727998.144 step 45/150 loss 7.0748 norm 0.801 1020 ms 256971 tok/s mfu 15.2% mem 7.83 GB
+1792727999.174 step 46/150 loss 6.9673 norm 0.454 1029 ms 254639 tok/s mfu 15.0% mem 7.83 GB
+1792728000.209 step 47/150 loss 6.9839 norm 0.575 1035 ms 253359 tok/s mfu 15.0% mem 7.83 GB
+1792728001.251 step 48/150 loss 6.9336 norm 0.544 1041 ms 251725 tok/s mfu 14.9% mem 7.83 GB
+1792728002.276 step 49/150 loss 6.9315 norm 0.401 1024 ms 256057 tok/s mfu 15.1% mem 7.83 GB
+1792728004.113 ckpt save step 50 blocked 808 ms
+1792728004.114 step 50/150 loss 6.9762 norm 0.598 1029 ms 254737 tok/s mfu 15.0% mem 7.83 GB
+1792728005.146 step 51/150 loss 6.9043 norm 0.443 1032 ms 254045 tok/s mfu 15.0% mem 7.83 GB
+1792728006.179 step 52/150 loss 6.8948 norm 0.508 1032 ms 254012 tok/s mfu 15.0% mem 7.83 GB
+1792728007.207 step 53/150 loss 6.9134 norm 0.615 1028 ms 255088 tok/s mfu 15.1% mem 7.83 GB
+1792728008.246 step 54/150 loss 6.8658 norm 0.354 1038 ms 252476 tok/s mfu 14.9% mem 7.83 GB
+1792728009.283 step 55/150 loss 6.8330 norm 0.385 1036 ms 253040 tok/s mfu 14.9% mem 7.83 GB
+1792728010.314 step 56/150 loss 6.9979 norm 0.624 1030 ms 254405 tok/s mfu 15.0% mem 7.83 GB
+1792728011.347 step 57/150 loss 6.8550 norm 0.348 1032 ms 254024 tok/s mfu 15.0% mem 7.83 GB
+1792728012.372 step 58/150 loss 6.8771 norm 0.504 1025 ms 255807 tok/s mfu 15.1% mem 7.83 GB
+1792728013.406 step 59/150 loss 6.8364 norm 0.496 1033 ms 253736 tok/s mfu 15.0% mem 7.83 GB
+1792728014.930 ckpt save step 60 blocked 499 ms
+1792728014.930 step 60/150 loss 6.8381 norm 0.421 1024 ms 256021 tok/s mfu 15.1% mem 7.83 GB
+1792728015.962 step 61/150 loss 6.8401 norm 0.388 1032 ms 254121 tok/s mfu 15.0% mem 7.83 GB
+1792728016.990 step 62/150 loss 6.7484 norm 0.430 1027 ms 255158 tok/s mfu 15.1% mem 7.83 GB
+1792728018.020 step 63/150 loss 6.7455 norm 0.514 1029 ms 254676 tok/s mfu 15.0% mem 7.83 GB
+1792728019.062 step 64/150 loss 6.7402 norm 0.679 1042 ms 251686 tok/s mfu 14.9% mem 7.83 GB
+1792728020.091 step 65/150 loss 6.7967 norm 0.529 1028 ms 254988 tok/s mfu 15.1% mem 7.83 GB
+1792728021.124 step 66/150 loss 6.7028 norm 0.572 1032 ms 254067 tok/s mfu 15.0% mem 7.83 GB
+1792728022.154 step 67/150 loss 6.8209 norm 0.643 1030 ms 254437 tok/s mfu 15.0% mem 7.83 GB
+1792728023.178 step 68/150 loss 6.7914 norm 0.569 1023 ms 256206 tok/s mfu 15.1% mem 7.83 GB
+1792728024.210 step 69/150 loss 6.7774 norm 0.654 1031 ms 254354 tok/s mfu 15.0% mem 7.83 GB
+1792728025.876 ckpt save step 70 blocked 621 ms
+1792728025.877 step 70/150 loss 6.7172 norm 0.424 1045 ms 250845 tok/s mfu 14.8% mem 7.83 GB
+1792728026.906 step 71/150 loss 6.6933 norm 0.553 1029 ms 254739 tok/s mfu 15.0% mem 7.83 GB
+1792728027.938 step 72/150 loss 6.6772 norm 0.645 1031 ms 254225 tok/s mfu 15.0% mem 7.83 GB
+1792728028.960 step 73/150 loss 6.7509 norm 0.637 1022 ms 256580 tok/s mfu 15.2% mem 7.83 GB
+1792728029.991 step 74/150 loss 6.6526 norm 0.455 1030 ms 254448 tok/s mfu 15.0% mem 7.83 GB
+1792728031.026 step 75/150 loss 6.6941 norm 0.556 1035 ms 253293 tok/s mfu 15.0% mem 7.83 GB
+1792728032.057 step 76/150 loss 6.6426 norm 0.405 1029 ms 254635 tok/s mfu 15.0% mem 7.83 GB
+1792728033.094 step 77/150 loss 6.6711 norm 0.557 1037 ms 252721 tok/s mfu 14.9% mem 7.83 GB
+1792728034.127 step 78/150 loss 6.6518 norm 0.702 1032 ms 254061 tok/s mfu 15.0% mem 7.83 GB
+1792728035.159 step 79/150 loss 6.6507 norm 0.618 1031 ms 254248 tok/s mfu 15.0% mem 7.83 GB
+1792728036.830 ckpt save step 80 blocked 630 ms
+1792728036.831 step 80/150 loss 6.7067 norm 0.508 1041 ms 251833 tok/s mfu 14.9% mem 7.83 GB
+1792728037.865 fault crash rank 3 step 81step 81/150 loss 6.6542 norm 0.536 1034 ms 253421 tok/s mfu 15.0% mem 7.83 GB
+1792728037.866 
+1792728038.143 W1023 04:00:38.141000 7 site-packages/torch/distributed/elastic/multiprocessing/api.py:1012] Sending process 302 closing signal SIGTERM
+1792728038.143 W1023 04:00:38.142000 7 site-packages/torch/distributed/elastic/multiprocessing/api.py:1012] Sending process 303 closing signal SIGTERM
+1792728038.144 W1023 04:00:38.142000 7 site-packages/torch/distributed/elastic/multiprocessing/api.py:1012] Sending process 304 closing signal SIGTERM
+1792728038.759 E1023 04:00:38.759000 7 site-packages/torch/distributed/elastic/multiprocessing/api.py:986] failed (exitcode: -9) local_rank: 3 (pid: 305) of binary: /usr/local/bin/python
+1792728041.701 proc start attempt 2 container 0
+1792728041.894 p2p [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]] cpu 	: unknown
+1792728041.897 /usr/local/lib/python3.12/site-packages/torch/distributed/c10d_logger.py:83: UserWarning: barrier(): using the device under current context. You can specify `device_id` in `init_process_group` to mute this warning.
+1792728041.897   return func(*args, **kwargs)
+1792728042.170 [rank0]:[W1023 04:00:42.780495675 ProcessGroupNCCL.cpp:5188] Guessing device ID based on global rank. This can cause a hang if rank to GPU mapping is heterogeneous. You can specify device_id in init_process_group()
+1792728042.656 nccl ready
+1792728046.818 ckpt load step 80 922 ms
+1792728046.819 fsdp 124M on 4 x NVIDIA L40S: 124M parameters, 8 micro-batches of 8 per GPU per step
+1792728049.987 step 81/150 loss 6.6542 norm 0.536 3167 ms 82769 tok/s mfu 4.9% mem 7.83 GB
+1792728051.031 step 82/150 loss 6.6842 norm 0.482 1042 ms 251479 tok/s mfu 14.9% mem 7.83 GB
+1792728052.076 step 83/150 loss 6.6609 norm 0.711 1045 ms 250954 tok/s mfu 14.8% mem 7.83 GB
+1792728053.132 step 84/150 loss 6.6194 norm 0.462 1056 ms 248309 tok/s mfu 14.7% mem 7.83 GB
+1792728054.175 step 85/150 loss 6.5826 norm 0.484 1041 ms 251727 tok/s mfu 14.9% mem 7.83 GB
+1792728055.222 step 86/150 loss 6.5786 norm 0.403 1046 ms 250553 tok/s mfu 14.8% mem 7.83 GB
+1792728056.259 step 87/150 loss 6.5521 norm 0.440 1037 ms 252905 tok/s mfu 14.9% mem 7.83 GB
+1792728057.299 step 88/150 loss 6.5912 norm 0.351 1040 ms 252143 tok/s mfu 14.9% mem 7.83 GB
+1792728058.344 step 89/150 loss 6.5718 norm 0.417 1045 ms 250947 tok/s mfu 14.8% mem 7.83 GB
+1792728060.147 ckpt save step 90 blocked 754 ms
+1792728060.147 step 90/150 loss 6.4990 norm 0.312 1048 ms 250144 tok/s mfu 14.8% mem 7.83 GB
+1792728061.198 step 91/150 loss 6.6643 norm 0.363 1050 ms 249688 tok/s mfu 14.7% mem 7.83 GB
+1792728062.236 step 92/150 loss 6.5296 norm 0.404 1038 ms 252471 tok/s mfu 14.9% mem 7.83 GB
+1792728063.262 step 93/150 loss 6.5669 norm 0.461 1025 ms 255766 tok/s mfu 15.1% mem 7.83 GB
+1792728064.300 step 94/150 loss 6.6041 norm 0.577 1038 ms 252592 tok/s mfu 14.9% mem 7.83 GB
+1792728065.332 step 95/150 loss 6.5466 norm 0.380 1031 ms 254281 tok/s mfu 15.0% mem 7.83 GB
+1792728066.366 step 96/150 loss 6.5794 norm 0.378 1034 ms 253567 tok/s mfu 15.0% mem 7.83 GB
+1792728067.405 step 97/150 loss 6.4951 norm 0.447 1038 ms 252656 tok/s mfu 14.9% mem 7.83 GB
+1792728068.439 step 98/150 loss 6.5179 norm 0.404 1033 ms 253667 tok/s mfu 15.0% mem 7.83 GB
+1792728069.474 step 99/150 loss 6.4952 norm 0.348 1035 ms 253363 tok/s mfu 15.0% mem 7.83 GB
+1792728071.308 ckpt save step 100 blocked 788 ms
+1792728071.308 step 100/150 loss 6.4950 norm 0.349 1045 ms 250835 tok/s mfu 14.8% mem 7.83 GB
+1792728072.355 step 101/150 loss 6.5328 norm 0.487 1046 ms 250562 tok/s mfu 14.8% mem 7.83 GB
+1792728073.392 step 102/150 loss 6.4778 norm 0.502 1036 ms 252952 tok/s mfu 14.9% mem 7.83 GB
+1792728074.431 step 103/150 loss 6.5054 norm 0.390 1038 ms 252436 tok/s mfu 14.9% mem 7.83 GB
+1792728075.471 step 104/150 loss 6.4997 norm 0.375 1040 ms 252100 tok/s mfu 14.9% mem 7.83 GB
+1792728076.512 step 105/150 loss 6.4148 norm 0.485 1040 ms 252005 tok/s mfu 14.9% mem 7.83 GB
+1792728077.551 step 106/150 loss 6.4245 norm 0.548 1038 ms 252496 tok/s mfu 14.9% mem 7.83 GB
+1792728078.587 step 107/150 loss 6.4251 norm 0.266 1035 ms 253202 tok/s mfu 15.0% mem 7.83 GB
+1792728079.625 step 108/150 loss 6.3852 norm 0.661 1037 ms 252803 tok/s mfu 14.9% mem 7.83 GB
+1792728080.668 step 109/150 loss 6.3859 norm 0.475 1043 ms 251411 tok/s mfu 14.9% mem 7.83 GB
+1792728082.187 ckpt save step 110 blocked 493 ms
+1792728082.187 step 110/150 loss 6.4119 norm 0.546 1025 ms 255662 tok/s mfu 15.1% mem 7.83 GB
+1792728083.233 step 111/150 loss 6.3634 norm 0.566 1045 ms 250754 tok/s mfu 14.8% mem 7.83 GB
+1792728084.278 step 112/150 loss 6.5189 norm 0.571 1044 ms 251119 tok/s mfu 14.8% mem 7.83 GB
+1792728085.307 step 113/150 loss 6.3821 norm 0.498 1029 ms 254870 tok/s mfu 15.1% mem 7.83 GB
+1792728086.347 step 114/150 loss 6.4660 norm 0.480 1040 ms 252019 tok/s mfu 14.9% mem 7.83 GB
+1792728087.382 step 115/150 loss 6.4513 norm 0.524 1034 ms 253541 tok/s mfu 15.0% mem 7.83 GB
+1792728088.404 step 116/150 loss 6.4579 norm 0.503 1021 ms 256748 tok/s mfu 15.2% mem 7.83 GB
+1792728089.428 step 117/150 loss 6.4434 norm 0.385 1024 ms 256024 tok/s mfu 15.1% mem 7.83 GB
+1792728090.459 step 118/150 loss 6.4115 norm 0.420 1030 ms 254448 tok/s mfu 15.0% mem 7.83 GB
+1792728091.492 step 119/150 loss 6.4289 norm 0.470 1032 ms 254018 tok/s mfu 15.0% mem 7.83 GB
+1792728093.147 ckpt save step 120 blocked 617 ms
+1792728093.147 step 120/150 loss 6.3886 norm 0.396 1037 ms 252736 tok/s mfu 14.9% mem 7.83 GB
+1792728094.186 step 121/150 loss 6.4343 norm 0.348 1039 ms 252355 tok/s mfu 14.9% mem 7.83 GB
+1792728095.225 step 122/150 loss 6.4338 norm 0.449 1038 ms 252500 tok/s mfu 14.9% mem 7.83 GB
+1792728096.250 step 123/150 loss 6.3437 norm 0.347 1024 ms 256085 tok/s mfu 15.1% mem 7.83 GB
+1792728097.281 step 124/150 loss 6.3464 norm 0.349 1031 ms 254245 tok/s mfu 15.0% mem 7.83 GB
+1792728098.310 step 125/150 loss 6.3837 norm 0.382 1028 ms 255086 tok/s mfu 15.1% mem 7.83 GB
+1792728099.343 step 126/150 loss 6.3938 norm 0.306 1033 ms 253820 tok/s mfu 15.0% mem 7.83 GB
+1792728100.390 step 127/150 loss 6.3970 norm 0.438 1046 ms 250666 tok/s mfu 14.8% mem 7.83 GB
+1792728101.441 step 128/150 loss 6.3525 norm 0.347 1051 ms 249479 tok/s mfu 14.7% mem 7.83 GB
+1792728101.442 fault crash rank 3 step 128
+1792728101.746 W1023 04:01:41.746000 7 site-packages/torch/distributed/elastic/multiprocessing/api.py:1012] Sending process 587 closing signal SIGTERM
+1792728101.749 W1023 04:01:41.749000 7 site-packages/torch/distributed/elastic/multiprocessing/api.py:1012] Sending process 588 closing signal SIGTERM
+1792728101.750 W1023 04:01:41.749000 7 site-packages/torch/distributed/elastic/multiprocessing/api.py:1012] Sending process 589 closing signal SIGTERM
+1792728102.315 E1023 04:01:42.314000 7 site-packages/torch/distributed/elastic/multiprocessing/api.py:986] failed (exitcode: -9) local_rank: 3 (pid: 590) of binary: /usr/local/bin/python
+1792728105.237 proc start attempt 3 container 0
+1792728105.460 p2p [[1, 0, 0, 0], [0, 1, 0, 0], [0, 0, 1, 0], [0, 0, 0, 1]] cpu 	: unknown
+1792728105.463 /usr/local/lib/python3.12/site-packages/torch/distributed/c10d_logger.py:83: UserWarning: barrier(): using the device under current context. You can specify `device_id` in `init_process_group` to mute this warning.
+1792728105.463   return func(*args, **kwargs)
+1792728105.733 [rank0]:[W1023 04:01:45.342671313 ProcessGroupNCCL.cpp:5188] Guessing device ID based on global rank. This can cause a hang if rank to GPU mapping is heterogeneous. You can specify device_id in init_process_group()
+1792728106.194 nccl ready
+1792728110.310 ckpt load step 120 883 ms
+1792728110.311 fsdp 124M on 4 x NVIDIA L40S: 124M parameters, 8 micro-batches of 8 per GPU per step
+1792728113.459 step 121/150 loss 6.4343 norm 0.348 3147 ms 83303 tok/s mfu 4.9% mem 7.83 GB
+1792728114.486 step 122/150 loss 6.4337 norm 0.449 1026 ms 255398 tok/s mfu 15.1% mem 7.83 GB
+1792728115.508 step 123/150 loss 6.3437 norm 0.347 1021 ms 256642 tok/s mfu 15.2% mem 7.83 GB
+1792728116.538 step 124/150 loss 6.3464 norm 0.349 1029 ms 254785 tok/s mfu 15.1% mem 7.83 GB
+1792728117.564 step 125/150 loss 6.3837 norm 0.382 1026 ms 255583 tok/s mfu 15.1% mem 7.83 GB
+1792728118.585 step 126/150 loss 6.3938 norm 0.306 1020 ms 256983 tok/s mfu 15.2% mem 7.83 GB
+1792728119.603 step 127/150 loss 6.3970 norm 0.438 1017 ms 257635 tok/s mfu 15.2% mem 7.83 GB
+1792728120.622 step 128/150 loss 6.3526 norm 0.347 1019 ms 257333 tok/s mfu 15.2% mem 7.83 GB
+1792728121.643 step 129/150 loss 6.3805 norm 0.275 1021 ms 256820 tok/s mfu 15.2% mem 7.83 GB
+1792728123.448 ckpt save step 130 blocked 781 ms
+1792728123.448 step 130/150 loss 6.3994 norm 0.365 1023 ms 256170 tok/s mfu 15.1% mem 7.83 GB
+1792728124.473 step 131/150 loss 6.4061 norm 0.343 1024 ms 255905 tok/s mfu 15.1% mem 7.83 GB
+1792728125.497 step 132/150 loss 6.3006 norm 0.258 1023 ms 256326 tok/s mfu 15.1% mem 7.83 GB
+1792728126.512 step 133/150 loss 6.4021 norm 0.346 1015 ms 258202 tok/s mfu 15.3% mem 7.83 GB
+1792728127.534 step 134/150 loss 6.3994 norm 0.339 1021 ms 256811 tok/s mfu 15.2% mem 7.83 GB
+1792728128.551 step 135/150 loss 6.3796 norm 0.313 1016 ms 257937 tok/s mfu 15.2% mem 7.83 GB
+1792728129.570 step 136/150 loss 6.3964 norm 0.266 1019 ms 257218 tok/s mfu 15.2% mem 7.83 GB
+1792728130.594 step 137/150 loss 6.3697 norm 0.312 1023 ms 256348 tok/s mfu 15.1% mem 7.83 GB
+1792728131.615 step 138/150 loss 6.4104 norm 0.252 1020 ms 256887 tok/s mfu 15.2% mem 7.83 GB
+1792728132.633 step 139/150 loss 6.3708 norm 0.275 1018 ms 257498 tok/s mfu 15.2% mem 7.83 GB
+1792728134.431 ckpt save step 140 blocked 780 ms
+1792728134.432 step 140/150 loss 6.3340 norm 0.268 1017 ms 257759 tok/s mfu 15.2% mem 7.83 GB
+1792728135.458 step 141/150 loss 6.4816 norm 0.419 1027 ms 255352 tok/s mfu 15.1% mem 7.83 GB
+1792728136.480 step 142/150 loss 6.3538 norm 0.237 1021 ms 256685 tok/s mfu 15.2% mem 7.83 GB
+1792728137.503 step 143/150 loss 6.3989 norm 0.481 1022 ms 256460 tok/s mfu 15.1% mem 7.83 GB
+1792728138.526 step 144/150 loss 6.3389 norm 0.341 1022 ms 256473 tok/s mfu 15.2% mem 7.83 GB
+1792728139.545 step 145/150 loss 6.4627 norm 0.276 1019 ms 257321 tok/s mfu 15.2% mem 7.83 GB
+1792728140.567 step 146/150 loss 6.3432 norm 0.328 1021 ms 256674 tok/s mfu 15.2% mem 7.83 GB
+1792728141.582 step 147/150 loss 6.3650 norm 0.286 1014 ms 258438 tok/s mfu 15.3% mem 7.83 GB
+1792728142.600 step 148/150 loss 6.3285 norm 0.380 1017 ms 257841 tok/s mfu 15.2% mem 7.83 GB
+1792728143.618 step 149/150 loss 6.4011 norm 0.364 1018 ms 257528 tok/s mfu 15.2% mem 7.83 GB
+1792728145.135 ckpt save step 150 blocked 496 ms
+1792728145.135 step 150/150 loss 6.4249 norm 0.540 1020 ms 256966 tok/s mfu 15.2% mem 7.83 GB
+1792728145.141 result {"start": 120, "mode": "fsdp", "model": "124M", "world": 4, "gpu": "NVIDIA L40S", "steps": 150, "batch": 262144, "micro": 8, "params": 123689472, "loss": 6.4249043464660645, "losses": [6.434332370758057, 6.433743476867676, 6.343741416931152, 6.3463826179504395, 6.383691310882568, 6.393832206726074, 6.396999835968018, 6.352552890777588, 6.380500316619873, 6.399379253387451, 6.406070709228516, 6.300622940063477, 6.402135848999023, 6.399372100830078, 6.379603385925293, 6.396378993988037, 6.369656085968018, 6.410430908203125, 6.370840072631836, 6.333964824676514, 6.481634140014648, 6.353845119476318, 6.398858070373535, 6.338879585266113, 6.46274471282959, 6.343156814575195, 6.364992141723633, 6.328535556793213, 6.401147842407227, 6.4249043464660645], "step_ms": 1020.1510680000183, "tok_s": 256965.86341268753, "mfu": 0.15179850926945404, "peak_mem_gb": 7.829157829284668}

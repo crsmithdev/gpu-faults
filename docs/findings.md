@@ -92,7 +92,43 @@ Runs: fc-01M5KAQAT59CNA6Y9YBNQRK0KM, fc-01M5KAQ6V431NMJT6G8RMVQFVS,
 fc-01M5KAQ5H4ES4PKJW9W4JAPN6M, fc-01M5KAQ82KHA6QAJERT26M2D4M (124M),
 fc-01M5KAQ7BAJYPW6JD704DQWPXS, fc-01M5KAQ3WKDQZM56DQTXQEXZ71 (1.5B).
 
+## 4×H100
+
+All four GPUs have peer access (NVLink). 124M, 200 steps:
+
+| Run | Step | MFU | NCCL time (total / not hidden) | Peak memory per GPU |
+| - | - | - | - | - |
+| DDP | 209 ms | 27.1% | 9.4 / 2.5 ms | 9.8 GB |
+| FSDP2 | 391 ms | 14.5% | 281 / 188 ms | 7.9 GB |
+
+The FSDP2 step was 311 ms in the crash run on another H100 container. A
+crash at step 50 with a checkpoint at step 40: workers start at 4.1 s,
+the checkpoint is loaded (1.8 s) at 11.5 s, and the run is back at step 50
+at 16.8 s. Logs are in `results/h100`.
+
+## Checkpoint interval
+
+FSDP2 124M on 4×L40S, 150 steps, rank 3 crashes at steps 37, 81 and 128
+(one fault per 52.4 s of steps). A sync save to local disk takes 0.650 s,
+so Young's interval is √(2 × 0.650 × 52.4) = 8.3 s, about 8 steps.
+`uv run python figures.py <dir>` computes the table and the figure from
+`results/interval`.
+
+| Interval | Overhead | Saving | Redoing steps | Restarting | Model |
+| - | - | - | - | - | - |
+| 2 steps | 85.5 s | 47.6 s | 2.1 s | 35.8 s | 88.3 s |
+| 5 steps | 64.4 s | 19.2 s | 6.3 s | 38.9 s | 63.8 s |
+| 10 steps | 62.6 s | 10.1 s | 15.5 s | 37.1 s | 61.9 s |
+| 20 steps | 68.9 s | 5.2 s | 27.3 s | 36.4 s | 72.8 s |
+| 40 steps | 86.4 s | 2.4 s | 49.0 s | 35.0 s | 101.8 s |
+
+The overhead is the wall time less 150 median steps; the run without
+checkpoints and faults has 2.8 s. The model is saves × 0.650 s plus, for
+each fault, a 12.1 s restart and half an interval of steps. At one fault per
+day, Young's interval is 5.6 minutes for 124M and 16.5 minutes for 1.5B
+(5.7 s save).
+
 ## Spend
 
-$16.57 over 42 runs on `faults-jobs`, to 2026-10-23 03:34 UTC, plus under
+$20.73 over 51 runs on `faults-jobs`, to 2026-10-23 04:10 UTC, plus under
 $0.10 of CPU probes.
