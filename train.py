@@ -18,6 +18,7 @@ Run it with torchrun. The settings are environment variables:
     FAULT     crash (SIGKILL) or hang (SIGSTOP) one rank, on the first attempt only
     FAULT_STEP, FAULT_RANK  where the fault happens
     NCCL_TIMEOUT  seconds before the NCCL watchdog stops a stuck collective (600 is the default)
+    STEP_TIMEOUT  seconds without a finished step before the process exits, 0 for none
 
 Every world size reads the same tokens at each step, in the same micro-batches,
 so the loss of a run on 4 GPUs can be compared with the loss on 1 GPU.
@@ -31,6 +32,8 @@ import datetime
 import os
 import signal
 import statistics
+import subprocess
+import sys
 import time
 
 import numpy as np
@@ -138,6 +141,19 @@ def comm_times(trace: str) -> tuple[float, float]:
     return total / 1e3, (total - overlap) / 1e3  # microseconds to milliseconds
 
 
+# The step watchdog: kill the rank when its beat file is older than the limit.
+WATCH = """
+import os, signal, sys, time
+pid, beat, limit, rank = int(sys.argv[1]), sys.argv[2], float(sys.argv[3]), sys.argv[4]
+while os.getppid() == pid:
+    if time.time() - os.path.getmtime(beat) > limit:
+        print(f"step timeout rank {rank} after {limit:.0f} s", flush=True)
+        os.kill(pid, signal.SIGKILL)
+        break
+    time.sleep(1)
+"""
+
+
 def latest(folder: str) -> int:
     """The step of the newest complete checkpoint in `folder`, or 0.
 
@@ -155,8 +171,11 @@ def main() -> None:
     attempt = int(os.environ.get("TORCHELASTIC_RESTART_COUNT", 0))
     if os.environ["RANK"] == "0":
         print(f"proc start attempt {attempt}", flush=True)
-    # async_save stages the state on the CPU and needs a CPU process group.
-    dist.init_process_group("cuda:nccl,cpu:gloo", timeout=datetime.timedelta(seconds=env("NCCL_TIMEOUT", 600)))
+    # async_save stages the state on the CPU and needs a CPU process group. Only
+    # NCCL alone comes back after a torchrun restart: in torch 2.11 the gloo
+    # group of the new workers fails with "Connection refused".
+    backend = "cuda:nccl,cpu:gloo" if env("ASYNC", 0) else "nccl"
+    dist.init_process_group(backend, timeout=datetime.timedelta(seconds=env("NCCL_TIMEOUT", 600)))
     rank, world = dist.get_rank(), dist.get_world_size()
     dist.barrier()  # the first collective creates the NCCL communicator
     if rank == 0:
@@ -208,6 +227,13 @@ def main() -> None:
         f"{count // world} micro-batches of {micro} per GPU per step")
 
     times, losses = [], []
+    # The NCCL watchdog cannot abort a collective whose peer is stopped, so a
+    # stuck step ends the process from outside, and torchrun restarts the group.
+    # It is a process, not a thread: a CUDA sync in .item() holds the GIL.
+    beat = f"/tmp/beat_{rank}"
+    open(beat, "w").close()
+    if (limit := env("STEP_TIMEOUT", 0)):
+        subprocess.Popen([sys.executable, "-c", WATCH, str(os.getpid()), beat, str(limit), str(rank)])
     prof = None
     for step in range(start, steps):
         if fault and step == fault_step and rank == fault_rank:
@@ -227,7 +253,9 @@ def main() -> None:
                 train.set_requires_gradient_sync(last)
             with (train.no_sync() if mode == "ddp" and not last else torch.enable_grad()):
                 with torch.autocast("cuda", torch.bfloat16):
-                    loss = train(x, y) / count
+                    # DDP and FSDP average the gradients over the ranks, so each rank
+                    # takes the mean over its own micro-batches.
+                    loss = train(x, y) / len(batches)
                 loss.backward()
             total += loss.detach()
         norm = torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
@@ -235,12 +263,13 @@ def main() -> None:
             group["lr"] = lr(step)
         opt.step()
         opt.zero_grad(set_to_none=True)
-        dist.all_reduce(total)
+        dist.all_reduce(total, op=dist.ReduceOp.AVG)
         torch.cuda.synchronize()
         dt = time.perf_counter() - t0
         if prof is None:
             times.append(dt)
         losses.append(total.item())
+        os.utime(beat)
         mfu = flops_per_token * batch / dt / (peak * world) if peak else float("nan")
         norm = norm.full_tensor() if hasattr(norm, "full_tensor") else norm
         if saving and saving[1].done():
