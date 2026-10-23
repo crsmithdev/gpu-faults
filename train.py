@@ -12,10 +12,12 @@ Run it with torchrun. The settings are environment variables:
     WARMUP    steps of linear learning-rate warmup
     PROFILE   steps to profile at the end, for the communication time
     DATA      the folder with the llm.c token shards from data.py
-    CKPT      the folder for checkpoints; a run resumes from the latest one in it
+    CKPT      the folder for checkpoints; a run resumes from the latest one in it.
+              {run} is the modal-lib run folder, on the runs Volume.
     CKPT_EVERY  steps between checkpoints, 0 for none
     ASYNC     1 to save with dcp.async_save
-    FAULT     crash (SIGKILL) or hang (SIGSTOP) one rank, on the first attempt only
+    FAULT     crash (SIGKILL) or hang (SIGSTOP) one rank, or stop the container (SIGKILL
+              to PID 1), on the first attempt only
     FAULT_STEP, FAULT_RANK  where the fault happens
     NCCL_TIMEOUT  seconds before the NCCL watchdog stops a stuck collective (600 is the default)
     STEP_TIMEOUT  seconds without a finished step before the process exits, 0 for none
@@ -167,10 +169,10 @@ def main() -> None:
     mode, size = env("MODE", "ddp"), env("MODEL", "124M")
     steps, batch, micro = env("STEPS", 50), env("BATCH", 262144), env("MICRO", 8)
     profile = env("PROFILE", 0)
-    ckpt, every = env("CKPT", ""), env("CKPT_EVERY", 0)
+    ckpt, every = env("CKPT", "").format(run=os.environ.get("MLIB_RUN_DIR", "")), env("CKPT_EVERY", 0)
     attempt = int(os.environ.get("TORCHELASTIC_RESTART_COUNT", 0))
     if os.environ["RANK"] == "0":
-        print(f"proc start attempt {attempt}", flush=True)
+        print(f"proc start attempt {attempt} container {os.environ.get('MLIB_ATTEMPT', 0)}", flush=True)
     # async_save stages the state on the CPU and needs a CPU process group. Only
     # NCCL alone comes back after a torchrun restart: in torch 2.11 the gloo
     # group of the new workers fails with "Connection refused".
@@ -221,7 +223,9 @@ def main() -> None:
     per_shard = (len(shards[0]) - 1) // batch
     gpu = torch.cuda.get_device_name()
     peak = next((v for k, v in PEAK.items() if k in gpu), None)
-    fault = env("FAULT", "") if attempt == 0 else ""
+    # A Modal retry starts torchrun again, so its restart count is 0 again.
+    first = attempt == 0 and os.environ.get("MLIB_ATTEMPT", "0") == "0"
+    fault = env("FAULT", "") if first else ""
     fault_step, fault_rank = env("FAULT_STEP", 0), env("FAULT_RANK", world - 1)
     log(f"{mode} {size} on {world} x {gpu}: {n_params / 1e6:.0f}M parameters, "
         f"{count // world} micro-batches of {micro} per GPU per step")
@@ -238,6 +242,8 @@ def main() -> None:
     for step in range(start, steps):
         if fault and step == fault_step and rank == fault_rank:
             print(f"fault {fault} rank {rank} step {step}", flush=True)
+            if fault == "container":
+                os.kill(1, signal.SIGKILL)
             os.kill(os.getpid(), signal.SIGKILL if fault == "crash" else signal.SIGSTOP)
         if profile and step == steps - profile:
             prof = torch.profiler.profile(activities=[torch.profiler.ProfilerActivity.CUDA])
