@@ -9,8 +9,12 @@ Run it with torchrun. The settings are environment variables:
     MICRO     sequences per micro-batch per GPU
     CKPT_ACT  1 to recompute the activations of each block in the backward pass
     COMPILE   0 to run without torch.compile
+    WARMUP    steps of linear learning-rate warmup
     PROFILE   steps to profile at the end, for the communication time
     DATA      the folder with the llm.c token shards from data.py
+    CKPT      the folder for checkpoints; a run resumes from the latest one in it
+    CKPT_EVERY  steps between checkpoints, 0 for none
+    ASYNC     1 to save with dcp.async_save
 
 Every world size reads the same tokens at each step, in the same micro-batches,
 so the loss of a run on 4 GPUs can be compared with the loss on 1 GPU.
@@ -27,8 +31,10 @@ import time
 import numpy as np
 import torch
 import torch.distributed as dist
+import torch.distributed.checkpoint as dcp
 import torch.nn as nn
 import torch.nn.functional as F
+from torch.distributed.checkpoint.state_dict import get_state_dict, set_state_dict
 from torch.distributed.fsdp import MixedPrecisionPolicy, fully_shard
 from torch.nn.parallel import DistributedDataParallel as DDP
 from torch.utils.checkpoint import checkpoint
@@ -37,7 +43,8 @@ SIZES = {"124M": dict(layers=12, heads=12, dim=768), "1.5B": dict(layers=48, hea
 VOCAB = 50304  # 50257 padded to a multiple of 128
 SEQ = 1024
 # Peak dense bf16 FLOP/s per GPU, from the NVIDIA data sheets. Modal's H100 is the SXM part.
-PEAK = {"L4": 121e12, "H100": 989e12}
+# The first name that is in the device name wins, so L40S comes before L4.
+PEAK = {"L40S": 362e12, "L4": 121e12, "H100": 989e12}
 WARM = 5  # steps left out of the medians, for the compile
 
 
@@ -126,11 +133,22 @@ def comm_times(trace: str) -> tuple[float, float]:
     return total / 1e3, (total - overlap) / 1e3  # microseconds to milliseconds
 
 
+def latest(folder: str) -> int:
+    """The step of the newest complete checkpoint in `folder`, or 0.
+
+    DCP writes .metadata last, after every rank has written its part.
+    """
+    done = glob.glob(os.path.join(folder, "step_*", ".metadata"))
+    return max((int(p.split(os.sep)[-2][5:]) for p in done), default=0)
+
+
 def main() -> None:
     mode, size = env("MODE", "ddp"), env("MODEL", "124M")
     steps, batch, micro = env("STEPS", 50), env("BATCH", 262144), env("MICRO", 8)
     profile = env("PROFILE", 0)
-    dist.init_process_group("nccl")
+    ckpt, every = env("CKPT", ""), env("CKPT_EVERY", 0)
+    # async_save stages the state on the CPU and needs a CPU process group.
+    dist.init_process_group("cuda:nccl,cpu:gloo")
     rank, world = dist.get_rank(), dist.get_world_size()
     torch.cuda.set_device(int(os.environ["LOCAL_RANK"]))
     count = batch // (micro * SEQ)
@@ -154,9 +172,20 @@ def main() -> None:
     else:
         train = DDP(model)
     opt = torch.optim.AdamW(model.parameters(), lr=6e-4, betas=(0.9, 0.95), weight_decay=0.1, fused=True)
-    warmup = max(1, steps // 20)
-    sched = torch.optim.lr_scheduler.LambdaLR(opt, lambda s: min((s + 1) / warmup, 0.1 + 0.9 * 0.5 * (
-        1 + math.cos(math.pi * min(1, max(0, s - warmup) / max(1, steps - warmup))))))
+    warmup = min(env("WARMUP", 20), steps)
+
+    def lr(s: int) -> float:
+        cos = 0.5 * (1 + math.cos(math.pi * min(1, max(0, s - warmup) / max(1, steps - warmup))))
+        return 6e-4 * min((s + 1) / warmup, 0.1 + 0.9 * cos)
+
+    start, saving = latest(ckpt) if ckpt else 0, None
+    if start:
+        t0 = time.perf_counter()
+        model_sd, opt_sd = get_state_dict(train, opt)
+        state = dict(model=model_sd, optim=opt_sd)
+        dcp.load(state, checkpoint_id=os.path.join(ckpt, f"step_{start:06d}"))
+        set_state_dict(train, opt, model_state_dict=state["model"], optim_state_dict=state["optim"])
+        log(f"ckpt load step {start} {(time.perf_counter() - t0) * 1e3:.0f} ms")
 
     shards = [shard(p) for p in sorted(glob.glob(os.path.join(env("DATA", "data"), "edu_fineweb_train_*.bin")))]
     per_shard = (len(shards[0]) - 1) // batch
@@ -167,7 +196,7 @@ def main() -> None:
 
     times, losses = [], []
     prof = None
-    for step in range(steps):
+    for step in range(start, steps):
         if profile and step == steps - profile:
             prof = torch.profiler.profile(activities=[torch.profiler.ProfilerActivity.CUDA])
             prof.start()
@@ -186,9 +215,10 @@ def main() -> None:
                 loss.backward()
             total += loss.detach()
         norm = torch.nn.utils.clip_grad_norm_(model.parameters(), 1.0)
+        for group in opt.param_groups:
+            group["lr"] = lr(step)
         opt.step()
         opt.zero_grad(set_to_none=True)
-        sched.step()
         dist.all_reduce(total)
         torch.cuda.synchronize()
         dt = time.perf_counter() - t0
@@ -197,10 +227,28 @@ def main() -> None:
         losses.append(total.item())
         mfu = flops_per_token * batch / dt / (peak * world) if peak else float("nan")
         norm = norm.full_tensor() if hasattr(norm, "full_tensor") else norm
+        if saving and saving[1].done():
+            log(f"ckpt saved step {saving[0]} {(time.perf_counter() - saving[2]) * 1e3:.0f} ms")
+            saving = None
+        if every and (step + 1) % every == 0:
+            if saving:
+                saving[1].result()
+                log(f"ckpt saved step {saving[0]} {(time.perf_counter() - saving[2]) * 1e3:.0f} ms")
+            t1 = time.perf_counter()
+            model_sd, opt_sd = get_state_dict(train, opt)
+            path = os.path.join(ckpt, f"step_{step + 1:06d}")
+            if env("ASYNC", 0):
+                saving = (step + 1, dcp.async_save(dict(model=model_sd, optim=opt_sd), checkpoint_id=path), t1)
+            else:
+                dcp.save(dict(model=model_sd, optim=opt_sd), checkpoint_id=path)
+            log(f"ckpt save step {step + 1} blocked {(time.perf_counter() - t1) * 1e3:.0f} ms")
         log(f"step {step + 1}/{steps} loss {losses[-1]:.4f} norm {norm.item():.3f} {dt * 1e3:.0f} ms "
             f"{batch / dt:.0f} tok/s mfu {mfu:.1%} mem {torch.cuda.max_memory_allocated() / 2**30:.2f} GB")
 
-    result = dict(mode=mode, model=size, world=world, gpu=gpu, steps=steps, batch=batch, micro=micro,
+    if saving:
+        saving[1].result()
+        log(f"ckpt saved step {saving[0]} {(time.perf_counter() - saving[2]) * 1e3:.0f} ms")
+    result = dict(start=start, mode=mode, model=size, world=world, gpu=gpu, steps=steps, batch=batch, micro=micro,
                   params=n_params, loss=losses[-1], losses=losses)
     timed = times[WARM:]
     if timed:
