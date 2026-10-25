@@ -8,7 +8,7 @@ Item numbers never change: commits, the spec and the vault quote them.
 id: 1
 status: open
 created: 2026-10-22
-updated: 2026-10-22
+updated: 2026-10-25
 priority: high
 labels: [project, modal]
 ---
@@ -23,3 +23,4 @@ Then kill one rank. Measure recovery time, and lost work against checkpoint over
 - 2026-10-22 19:17: 2026-10-22: DDP/FSDP2 comparison, crash, hang and lost-container recovery measured; see docs/findings.md. Left: checkpoint cost by size and sync vs async, checkpoint interval against Young/Daly, 1.5B DDP OOM (L4 call pending), H100 check, README, post.
 - 2026-10-22 20:35: 2026-10-23 UTC: checkpoint cost measured; 1.5B DDP OOM on 4×L4 confirmed; found two kinds of 4×L40S host (FSDP2 124M 660 vs 1030 ms per step, cause unconfirmed); see docs/findings.md (60ebe7b). Post draft on crsmithdev.com branch post/gpu-faults (ddb34c7). Left: checkpoint interval vs Young/Daly, H100 check, README, finish post.
 - 2026-10-22 21:09: 2026-10-23 04:08 UTC: checkpoint interval (best 10 steps, Young 8.3 s) and H100 runs done; README written; findings 27238c0. Post draft 1f77949 on branch post/gpu-faults is complete apart from Chris's review. Spend $20.73.
+- 2026-10-25 08:33: 2026-10-25: post published at https://crsmith.dev/blog/gpu-faults/ (crsmithdev.com b86e4bf); repo made public.
