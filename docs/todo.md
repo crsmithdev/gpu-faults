@@ -6,7 +6,7 @@ Item numbers never change: commits, the spec and the vault quote them.
 ## 1. DDP vs FSDP2 on 4 GPUs, checkpoint cost, and recovery from a crashed, hung or lost worker
 ---
 id: 1
-status: open
+status: done
 created: 2026-10-22
 updated: 2026-10-25
 priority: high
